@@ -340,10 +340,16 @@ void ReadFromKeyboard()
 	}
 
 	size_t startVertex;
-	std::cout << "Введите вершину: ";
+	std::cout << "Введите вершину из списка: ";
+	for(size_t i = 1; i <= size; i++)
+	{
+		std::cout << i << ' ';
+	}
+	std::cout << '\n';
 	inputNumber = GetIntFromUser();
 	while(inputNumber <= 0 || inputNumber >= size)
 	{
+		std::cout << "Такой вершины нет!\n";
 		inputNumber = GetIntFromUser();
 	}
 	system("cls");
