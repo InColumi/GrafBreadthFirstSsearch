@@ -105,6 +105,7 @@ public:
 	template<typename T>
 	void ShowMatrix(T& stream)
 	{
+		std::cout << "Матрица:\n";
 		for(size_t i = 0; i < _size; i++)
 		{
 			for(size_t j = 0; j < _size; j++)
@@ -256,6 +257,7 @@ void ReadFromFile()
 
 					Matrix matrix(textFromFile);
 					std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
+					matrix.ShowMatrix(std::cout);
 					ShowVertex(vertexes, countSteps);
 				}
 				catch(const std::exception&)
@@ -365,7 +367,7 @@ void ReadFromKeyboard()
 	std::cout << "Введите количество шагов: ";
 	size_t countSteps = InputNumberMoreZero();;
 	
-	std::cout << "Матрица:\n";
+	
 
 	std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
 	matrix.ShowMatrix(std::cout);
