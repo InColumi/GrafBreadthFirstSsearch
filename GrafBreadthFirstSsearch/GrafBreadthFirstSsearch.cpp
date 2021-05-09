@@ -57,26 +57,34 @@ private:
 		return index >= 0 && index < _size;
 	}
 
+	void CheckIndex(size_t i, size_t j)
+	{
+		if(IsCorrect(i) == false || IsCorrect(j) == false)
+		{
+			std::cout << "Неверный индекс!\n";
+			exit(-1);
+		}
+	}
+
 public:
 	Matrix(): _matrix(NULL), _size(0)
 	{}
+
+	Matrix(size_t size)
+	{
+		_size = size;
+		MemoryAllocation();
+	}
 
 	Matrix(std::vector<std::string>& matrixInStrings)
 	{
 		Parse(matrixInStrings);
 	}
 
-	const bool& operator()(size_t row, size_t col)
+	const bool& operator()(size_t i, size_t j)
 	{
-		if(IsCorrect(row) && IsCorrect(col))
-		{
-			return _matrix[row][col];
-		}
-		else
-		{
-			std::cout << "Неверный индекс!\n";
-			exit(-1);
-		}
+		CheckIndex(i, j);
+		return _matrix[i][j];
 	}
 
 	~Matrix()
@@ -105,6 +113,12 @@ public:
 			}
 			stream << "\n";
 		}
+	}
+
+	void Change(size_t i, size_t j, bool data)
+	{
+		CheckIndex(i, j);
+		_matrix[i][j] = data;
 	}
 };
 
@@ -254,11 +268,6 @@ void ReadFromFile()
 	}
 }
 
-void ReadFromKeyboard()
-{
-
-}
-
 bool TryParseToInt(int& number)
 {
 	std::string input;
@@ -274,6 +283,76 @@ bool TryParseToInt(int& number)
 		return false;
 	}
 
+}
+
+int GetIntFromUser()
+{
+	bool isCorrect = false;
+	int number;
+	while(isCorrect == false)
+	{
+		if(TryParseToInt(number))
+		{
+			return number;
+		}
+	}
+}
+
+size_t InputNumberMoreZero()
+{
+	int inputNumber = GetIntFromUser();
+	while(inputNumber <= 0)
+	{
+		inputNumber = GetIntFromUser();
+	}
+	system("cls");
+	return inputNumber;
+}
+
+void ReadFromKeyboard()
+{
+	std::cout << "Введите размерность матрицы смежности: ";
+	size_t size = InputNumberMoreZero();
+	
+	Matrix matrix(size);
+	size_t i = 0;
+	size_t j = 0;
+	int inputNumber;
+	while(i < size)
+	{
+		std::cout << "Введите значение матрицы (1 или 0): [" << i << "][" << j << "] = ";
+		if(TryParseToInt(inputNumber))
+		{
+			if(inputNumber == 1 || inputNumber == 0)
+			{
+				matrix.Change(i, j++, inputNumber);
+			}
+			else
+			{
+				std::cout << "Можно вводить только 1 или 0\n";
+			}
+		}
+		if(j >= size)
+		{
+			j = 0;
+			i++;
+		}
+	}
+
+	size_t startVertex;
+	std::cout << "Введите вершину: ";
+	inputNumber = GetIntFromUser();
+	while(inputNumber <= 0 || inputNumber >= size)
+	{
+		inputNumber = GetIntFromUser();
+	}
+	system("cls");
+	startVertex = inputNumber;
+	std::cout << "Введите количество шагов: ";
+	size_t countSteps = InputNumberMoreZero();;
+
+	std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
+	ShowVertex(vertexes, countSteps);
 }
 
 void ShowMenu()
