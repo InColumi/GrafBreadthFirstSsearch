@@ -51,7 +51,7 @@ private:
 			countColumn = 0;
 		}
 	}
-	
+
 	bool IsCorrect(size_t index)
 	{
 		return index >= 0 && index < _size;
@@ -66,7 +66,7 @@ public:
 		Parse(matrixInStrings);
 	}
 
-	const bool& operator()(size_t row, size_t col) 
+	const bool& operator()(size_t row, size_t col)
 	{
 		if(IsCorrect(row) && IsCorrect(col))
 		{
@@ -128,6 +128,76 @@ bool IsCorrectExtention(std::string& filename, std::string  extention = ".txt")
 	return true;
 }
 
+void CheckInputData(Matrix& matrix, size_t startVertex)
+{
+	size_t size = matrix.GetSize();
+	if(startVertex < 0 || startVertex >= size)
+	{
+		std::cout << "Недопустимая вершина в файле!\n";
+		exit(-1);
+	}
+}
+
+void ShowVertex(std::vector<size_t>& vertexes, int countSteps)
+{
+	size_t size = vertexes.size();
+	std::cout << "За " << countSteps << " шагов ";
+	if(size == 1)
+	{
+		std::cout << "из вершины " << vertexes[0] + 1 << " нелья никуда попасть!\n";
+	}
+	else
+	{
+		std::cout << "Из вершины " << vertexes[0] + 1 << " можно попасть в:\n";
+		for(size_t i = 1; i < size; i++)
+		{
+			std::cout << '\t' << vertexes[i] + 1 << " вершину.\n";
+		}
+	}
+}
+
+std::vector<size_t> GetVertexes(Matrix& matrix, int startVertex, size_t countSteps)
+{
+	startVertex--;
+	CheckInputData(matrix, startVertex);
+	std::vector<size_t> vertexes;
+	vertexes.push_back(startVertex);
+	size_t size = matrix.GetSize();
+	bool isExistPath = false;
+	bool isVertexInVector = false;
+	size_t indexCurrentVertex = vertexes.back();
+	for(size_t i = 0; i < countSteps; i++)
+	{
+		for(size_t j = 0; j < size; j++)
+		{
+			if(matrix(j, indexCurrentVertex) == 1)
+			{
+				isExistPath = true;
+				for(size_t k = 0; k < vertexes.size(); k++)
+				{
+					if(vertexes[k] == j)
+					{
+						isVertexInVector = true;
+						break;
+					}
+				}
+				if(isVertexInVector == false)
+				{
+					vertexes.push_back(j);
+				}
+				isVertexInVector = false;
+			}
+		}
+		if(isExistPath == false)
+		{
+			break;
+		}
+		indexCurrentVertex = vertexes.back();
+	}
+
+	return vertexes;
+}
+
 void ReadFromFile()
 {
 	std::string input;
@@ -163,7 +233,8 @@ void ReadFromFile()
 					outFile.close();
 
 					Matrix matrix(textFromFile);
-					matrix.ShowMatrix(std::cout);
+					std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
+					ShowVertex(vertexes, countSteps);
 				}
 				catch(const std::exception&)
 				{
