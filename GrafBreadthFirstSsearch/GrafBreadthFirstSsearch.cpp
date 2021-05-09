@@ -246,6 +246,14 @@ void ReadFromFile()
 					}
 					outFile.close();
 
+					int rows = textFromFile.size();
+					int col = textFromFile[0].size() / 2 + 1;
+					if(rows != col)
+					{
+						std::cout << "Матрица не квадратная!\n";
+						exit(-1);
+					}
+
 					Matrix matrix(textFromFile);
 					std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
 					ShowVertex(vertexes, countSteps);
