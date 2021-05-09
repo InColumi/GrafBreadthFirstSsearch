@@ -355,7 +355,7 @@ void ReadFromKeyboard()
 	}
 	std::cout << '\n';
 	inputNumber = GetIntFromUser();
-	while(inputNumber <= 0 || inputNumber >= size)
+	while(inputNumber <= 0 || inputNumber > size)
 	{
 		std::cout << "Такой вершины нет!\n";
 		inputNumber = GetIntFromUser();
@@ -364,8 +364,11 @@ void ReadFromKeyboard()
 	startVertex = inputNumber;
 	std::cout << "Введите количество шагов: ";
 	size_t countSteps = InputNumberMoreZero();;
+	
+	std::cout << "Матрица:\n";
 
 	std::vector<size_t> vertexes = GetVertexes(matrix, startVertex, countSteps);
+	matrix.ShowMatrix(std::cout);
 	ShowVertex(vertexes, countSteps);
 }
 
@@ -418,4 +421,6 @@ int main()
 {
 	setlocale(LC_ALL, "rus");
 	ShowMenu();
+	system("pause");
+	return 0;
 }
