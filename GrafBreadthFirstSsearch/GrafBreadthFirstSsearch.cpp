@@ -1,6 +1,112 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
+
+class Matrix
+{
+private:
+	bool** _matrix;
+	size_t _size;
+
+	void MemoryAllocation()
+	{
+		_matrix = new bool* [_size];
+		for(size_t i = 0; i < _size; i++)
+		{
+			_matrix[i] = new bool[_size];
+		}
+	}
+
+	void Parse(std::vector<std::string>& matrixInStrings)
+	{
+		_size = matrixInStrings.size();
+		MemoryAllocation();
+		size_t sizeRow;
+		std::string line;
+		size_t countColumn = 0;
+		for(size_t i = 0; i < _size; i++)
+		{
+			line = matrixInStrings[i];
+			sizeRow = line.size();
+			for(size_t j = 0; j < sizeRow; j++)
+			{
+				if(line[j] != ' ')
+				{
+					if(line[j] == '0')
+					{
+						_matrix[i][countColumn++] = 0;
+					}
+					else if(line[j] == '1')
+					{
+						_matrix[i][countColumn++] = 1;
+					}
+					else
+					{
+						std::cout << "В файле некорретные данные!\n";
+						exit(-1);
+					}
+				}
+			}
+			countColumn = 0;
+		}
+	}
+	
+	bool IsCorrect(size_t index)
+	{
+		return index >= 0 && index < _size;
+	}
+
+public:
+	Matrix(): _matrix(NULL), _size(0)
+	{}
+
+	Matrix(std::vector<std::string>& matrixInStrings)
+	{
+		Parse(matrixInStrings);
+	}
+
+	const bool& operator()(size_t row, size_t col) 
+	{
+		if(IsCorrect(row) && IsCorrect(col))
+		{
+			return _matrix[row][col];
+		}
+		else
+		{
+			std::cout << "Неверный индекс!\n";
+			exit(-1);
+		}
+	}
+
+	~Matrix()
+	{
+		for(size_t i = 0; i < _size; i++)
+		{
+			delete[]_matrix[i];
+		}
+		delete[] _matrix;
+		_size = 0;
+	}
+
+	size_t GetSize()
+	{
+		return _size;
+	}
+
+	template<typename T>
+	void ShowMatrix(T& stream)
+	{
+		for(size_t i = 0; i < _size; i++)
+		{
+			for(size_t j = 0; j < _size; j++)
+			{
+				stream << _matrix[i][j] << "\t";
+			}
+			stream << "\n";
+		}
+	}
+};
 
 bool IsCorrectExtention(std::string& filename, std::string  extention = ".txt")
 {
@@ -26,7 +132,7 @@ void ReadFromFile()
 {
 	std::string input;
 	bool isCorrect = false;
-	std::fstream outFile;
+	std::ifstream outFile;
 	while(isCorrect == false)
 	{
 		std::cout << "Введите имя файла с раширением txt\n";
@@ -39,7 +145,31 @@ void ReadFromFile()
 			if(outFile.is_open())
 			{
 				system("cls");
-				std::cout << "Нашел!\n";
+
+				std::string line;
+				std::vector<std::string> textFromFile;
+				int startVertex;
+				int countSteps;
+				try
+				{
+					std::getline(outFile, line);
+					startVertex = std::stoi(line);
+					std::getline(outFile, line);
+					countSteps = std::stoi(line);
+					while(std::getline(outFile, line))
+					{
+						textFromFile.push_back(line);
+					}
+					outFile.close();
+
+					Matrix matrix(textFromFile);
+					matrix.ShowMatrix(std::cout);
+				}
+				catch(const std::exception&)
+				{
+					std::cout << "Что-то с файлом не так!\n";
+				}
+				isCorrect = true;
 			}
 			else
 			{
